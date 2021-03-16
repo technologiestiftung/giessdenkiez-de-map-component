@@ -17,7 +17,8 @@
     "noUnusedParameters": false,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": true,
+    // TODO: This should be changed when goging back to production
+    "strict": false,
     "target": "esnext",
     "baseUrl": ".",
     "moduleResolution": "node",
