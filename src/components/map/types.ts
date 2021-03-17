@@ -27,3 +27,4 @@ export interface FeatureSignature {
 }
 
 export type OnViewStateChange = (e: unknown) => void;
+export type SetSelectedTree = (id: string) => void;
