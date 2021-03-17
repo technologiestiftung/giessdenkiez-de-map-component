@@ -4,11 +4,18 @@ import { scaleLinear, interpolateViridis, easeCubic as d3EaseCubic } from 'd3';
 import { FlyToInterpolator } from 'react-map-gl';
 
 import {
-  FeatureCollectionSignature,
-  FeatureSignature,
+  FeatureCollection,
+  Feature,
+  TreeFeature,
+  PumpFeature,
+  RainFeature,
   OnViewStateChange,
   SetSelectedTree,
+  HoveredPump,
+  SetHoveredPump,
 } from './types';
+
+import { pumpColors } from './colors';
 
 const getTreeFill = (radolan: number): RGBAColor => {
   const scale = scaleLinear().domain([0, 300]).range([1, 0.6]);
@@ -41,19 +48,30 @@ const transitionViewState = (feature, isMobile) => {
 
 export const getLayers = (
   isMobile: boolean,
+
   onViewStateChange: OnViewStateChange,
-  trees: FeatureCollectionSignature,
+
   showTrees: boolean,
+  showPumps: boolean,
+  showRain: boolean,
+
+  trees: FeatureCollection,
+  pumps: FeatureCollection,
+  rain: FeatureCollection,
+
   selectedTree: string,
-  setSelectedTree: SetSelectedTree
-): GeoJsonLayer<FeatureSignature, GeoJsonLayerProps<FeatureSignature>>[] => {
+  setSelectedTree: SetSelectedTree,
+
+  hoveredPump: HoveredPump,
+  setHoveredPump: SetHoveredPump
+): GeoJsonLayer<Feature, GeoJsonLayerProps<Feature>>[] => {
   const getTreeLayer = (): GeoJsonLayer<
-    FeatureSignature,
-    GeoJsonLayerProps<FeatureSignature>
+    TreeFeature,
+    GeoJsonLayerProps<TreeFeature>
   > => {
     return new GeoJsonLayer({
-      id: 'geojson',
-      data: trees.features,
+      id: 'tree',
+      data: trees.features as TreeFeature[],
 
       pickable: true,
       stroked: true,
@@ -72,14 +90,13 @@ export const getLayers = (
         if (selectedTree && tree.properties.id == selectedTree) return 1;
         else return 0;
       },
-      lineWidthScale: 1,
 
       autoHighlight: true,
       highlightColor: [200, 200, 200, 255],
 
-      onClick: ({ object: feature }) => {
-        setSelectedTree(feature.properties.id);
-        onViewStateChange(transitionViewState(feature, isMobile));
+      onClick: ({ object: tree }) => {
+        setSelectedTree(tree.properties.id);
+        onViewStateChange(transitionViewState(tree, isMobile));
       },
 
       updateTriggers: {
@@ -88,7 +105,44 @@ export const getLayers = (
     });
   };
 
-  const layers = [getTreeLayer()];
+  const getPumpLayer = (): GeoJsonLayer<
+    PumpFeature,
+    GeoJsonLayerProps<PumpFeature>
+  > => {
+    return new GeoJsonLayer({
+      id: 'pumps',
+      data: pumps.features as PumpFeature[],
+
+      pickable: true,
+      stroked: true,
+      filled: true,
+      extruded: true,
+
+      visible: showPumps,
+      opacity: 1,
+
+      getFillColor: pump => {
+        return pumpColors[pump.properties['pump:status']].rgba;
+      },
+      getRadius: 9,
+      pointRadiusMinPixels: 4,
+
+      getLineColor: [0, 0, 0, 200],
+      getLineWidth: 3,
+      lineWidthMinPixels: 1.5,
+
+      onHover: ({ picked, x, y, object }) => {
+        if (picked)
+          setHoveredPump({
+            pointer: [x, y],
+            message: object.properties['pump:status'],
+          });
+        else setHoveredPump(null);
+      },
+    });
+  };
+
+  const layers = [getTreeLayer(), getPumpLayer()];
 
   return layers;
 };
