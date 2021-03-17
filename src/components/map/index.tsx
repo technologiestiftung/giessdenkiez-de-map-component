@@ -17,12 +17,19 @@ const initialViewState: ViewState = {
 
 const Map: FC = () => {
   const [viewState, setViewState] = useState(initialViewState);
+  const [selectedTree, setSelectedTree] = useState(null);
 
   const onViewStateChange = (e: { viewState: ViewState }) =>
     setViewState({ ...viewState, ...e.viewState });
 
   return (
-    <MapLayer viewState={viewState} onViewStateChange={onViewStateChange} />
+    <MapLayer
+      isMobile={false}
+      viewState={viewState}
+      onViewStateChange={onViewStateChange}
+      selectedTree={selectedTree}
+      setSelectedTree={setSelectedTree}
+    />
   );
 };
 
