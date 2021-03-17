@@ -7,10 +7,8 @@ import {
   FeatureCollectionSignature,
   FeatureSignature,
   OnViewStateChange,
+  SetSelectedTree,
 } from './types';
-
-const isMobile = false;
-// type GeoJsonLayerSignature = typeof GeoJsonLayer<FeatureSignature>;
 
 const getTreeFill = (radolan: number): RGBAColor => {
   const scale = scaleLinear().domain([0, 300]).range([1, 0.6]);
@@ -24,11 +22,8 @@ const getTreeFill = (radolan: number): RGBAColor => {
   ];
 };
 
-const onTreeClick = (
-  feature: FeatureSignature,
-  onViewStateChange: OnViewStateChange
-) => {
-  onViewStateChange({
+const transitionViewState = (feature, isMobile) => {
+  return {
     viewState: {
       latitude: feature.geometry.coordinates[1],
       longitude: feature.geometry.coordinates[0],
@@ -41,38 +36,59 @@ const onTreeClick = (
       pitch: isMobile ? 0 : 45,
       bearing: 0,
     },
-  });
+  };
 };
 
 export const getLayers = (
+  isMobile: boolean,
   onViewStateChange: OnViewStateChange,
-  trees: FeatureCollectionSignature
+  trees: FeatureCollectionSignature,
+  showTrees: boolean,
+  selectedTree: string,
+  setSelectedTree: SetSelectedTree
 ): GeoJsonLayer<FeatureSignature, GeoJsonLayerProps<FeatureSignature>>[] => {
-  const layers = [
-    new GeoJsonLayer({
+  const getTreeLayer = (): GeoJsonLayer<
+    FeatureSignature,
+    GeoJsonLayerProps<FeatureSignature>
+  > => {
+    return new GeoJsonLayer({
       id: 'geojson',
       data: trees.features,
 
       pickable: true,
-      stroked: false,
+      stroked: true,
       filled: true,
       extruded: true,
 
+      visible: showTrees,
       opacity: 1,
-      getRadius: 10,
-
-      // lineWidthScale: 1,
-      // lineWidthMinPixels: 2,
-      // getLineColor: [255, 0, 0, 255],
-      // getLineWidth: 0.1,
-      // getElevation: 30,
 
       getFillColor: tree => getTreeFill(tree.properties.radolan_sum),
-      onClick: ({ object }) => {
-        onTreeClick(object, onViewStateChange);
+      getRadius: 3,
+      pointRadiusMinPixels: 0.5,
+
+      getLineColor: [247, 105, 6, 255],
+      getLineWidth: tree => {
+        if (selectedTree && tree.properties.id == selectedTree) return 1;
+        else return 0;
       },
-    }),
-  ];
+      lineWidthScale: 1,
+
+      autoHighlight: true,
+      highlightColor: [200, 200, 200, 255],
+
+      onClick: ({ object: feature }) => {
+        setSelectedTree(feature.properties.id);
+        onViewStateChange(transitionViewState(feature, isMobile));
+      },
+
+      updateTriggers: {
+        getLineWidth: [selectedTree],
+      },
+    });
+  };
+
+  const layers = [getTreeLayer()];
 
   return layers;
 };
