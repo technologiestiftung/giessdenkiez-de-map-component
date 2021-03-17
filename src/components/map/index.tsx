@@ -1,7 +1,8 @@
 import React, { FC, useState } from 'react';
 // import MapGL from './mapGL';
+
+import PumpHover from './pumpHover';
 import MapLayer from './mapLayer';
-import MapControls from './mapControls';
 
 import { ViewState } from './types';
 
@@ -17,19 +18,64 @@ const initialViewState: ViewState = {
 
 const Map: FC = () => {
   const [viewState, setViewState] = useState(initialViewState);
+
+  const [showTrees, setShowTrees] = useState(true);
+  const [showPumps, setShowPumps] = useState(false);
+  const [showRain, setShowRain] = useState(false);
+
   const [selectedTree, setSelectedTree] = useState(null);
+
+  const [hoveredPump, setHoveredPump] = useState(null);
 
   const onViewStateChange = (e: { viewState: ViewState }) =>
     setViewState({ ...viewState, ...e.viewState });
 
+  const setLayer = (layer: string) => {
+    let showTrees = false,
+      showPumps = false,
+      showRain = false;
+
+    switch (layer) {
+      case 'trees':
+        showTrees = true;
+        break;
+      case 'pumps':
+        showPumps = true;
+        break;
+      case 'rain':
+        showRain = true;
+        break;
+    }
+
+    setShowTrees(showTrees);
+    setShowPumps(showPumps);
+    setShowRain(showRain);
+  };
+
+  console.log(hoveredPump);
+
   return (
-    <MapLayer
-      isMobile={false}
-      viewState={viewState}
-      onViewStateChange={onViewStateChange}
-      selectedTree={selectedTree}
-      setSelectedTree={setSelectedTree}
-    />
+    <>
+      {hoveredPump && (
+        <PumpHover
+          message={hoveredPump.message}
+          pointer={hoveredPump.pointer}
+        />
+      )}
+      <MapLayer
+        isMobile={false}
+        viewState={viewState}
+        onViewStateChange={onViewStateChange}
+        showTrees={showTrees}
+        showPumps={showPumps}
+        showRain={showRain}
+        setLayer={setLayer}
+        selectedTree={selectedTree}
+        setSelectedTree={setSelectedTree}
+        hoveredPump={hoveredPump}
+        setHoveredPump={setHoveredPump}
+      />
+    </>
   );
 };
 
