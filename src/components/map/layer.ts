@@ -1,4 +1,3 @@
-import { RGBAColor } from '@deck.gl/core';
 import { GeoJsonLayer, GeoJsonLayerProps } from '@deck.gl/layers';
 import { scaleLinear, interpolateViridis, easeCubic as d3EaseCubic } from 'd3';
 import { FlyToInterpolator } from 'react-map-gl';
@@ -11,23 +10,10 @@ import {
   RainFeature,
   OnViewStateChange,
   SetSelectedTree,
-  HoveredPump,
   SetHoveredPump,
 } from './types';
 
-import { pumpColors } from './colors';
-
-const getTreeFill = (radolan: number): RGBAColor => {
-  const scale = scaleLinear().domain([0, 300]).range([1, 0.6]);
-  const hex = interpolateViridis(scale(radolan)).substr(1).match(/.{2}/g);
-
-  return [
-    parseInt(hex[0], 16),
-    parseInt(hex[1], 16),
-    parseInt(hex[2], 16),
-    200,
-  ];
-};
+import { pumpColors, getRainColor } from './colors';
 
 const transitionViewState = (feature, isMobile) => {
   return {
@@ -62,7 +48,6 @@ export const getLayers = (
   selectedTree: string,
   setSelectedTree: SetSelectedTree,
 
-  hoveredPump: HoveredPump,
   setHoveredPump: SetHoveredPump
 ): GeoJsonLayer<Feature, GeoJsonLayerProps<Feature>>[] => {
   const getTreeLayer = (): GeoJsonLayer<
@@ -72,33 +57,37 @@ export const getLayers = (
     return new GeoJsonLayer({
       id: 'tree',
       data: trees.features as TreeFeature[],
-
+      //Properties
       pickable: true,
       stroked: true,
       filled: true,
       extruded: true,
-
+      //Visibility
       visible: showTrees,
       opacity: 1,
-
-      getFillColor: tree => getTreeFill(tree.properties.radolan_sum),
+      //Filled
+      /**
+       * Tree Color is based on rain amounts
+       * radolan_sum is an aggregated number of rain recieved
+       */
+      getFillColor: tree => getRainColor(tree.properties.radolan_sum),
       getRadius: 3,
       pointRadiusMinPixels: 0.5,
-
+      //Stroke
       getLineColor: [247, 105, 6, 255],
       getLineWidth: tree => {
         if (selectedTree && tree.properties.id == selectedTree) return 1;
         else return 0;
       },
-
+      //Hover
       autoHighlight: true,
       highlightColor: [200, 200, 200, 255],
-
+      //Actions
       onClick: ({ object: tree }) => {
         setSelectedTree(tree.properties.id);
         onViewStateChange(transitionViewState(tree, isMobile));
       },
-
+      //On what change to update
       updateTriggers: {
         getLineWidth: [selectedTree],
       },
@@ -142,7 +131,49 @@ export const getLayers = (
     });
   };
 
-  const layers = [getTreeLayer(), getPumpLayer()];
+  const getRainLayer = (): GeoJsonLayer<
+    RainFeature,
+    GeoJsonLayerProps<RainFeature>
+  > => {
+    return new GeoJsonLayer({
+      id: 'rain',
+      data: rain.features as RainFeature[],
+
+      pickable: true,
+      stroked: false,
+      filled: true,
+      extruded: true,
+      wireframe: true,
+
+      visible: showRain,
+      opacity: 0.95,
+      getElevation: 1,
+      /**
+       * Apparently DWD 1 is not 1ml but 0.1ml
+       * We could change this in the database, but this would mean,
+       * transferring 625.000 "," characters, therefore,
+       * changing it client-side makes more sense.
+       */
+      getFillColor: rain => getRainColor(rain.properties.data[0] / 10),
+      getRadius: 9,
+      pointRadiusMinPixels: 4,
+
+      getLineColor: [0, 0, 0, 200],
+      getLineWidth: 3,
+      lineWidthMinPixels: 1.5,
+
+      // onHover: ({ picked, x, y, object }) => {
+      //   if (picked)
+      //     setHoveredPump({
+      //       pointer: [x, y],
+      //       message: object.properties['pump:status'],
+      //     });
+      //   else setHoveredPump(null);
+      // },
+    });
+  };
+
+  const layers = [getTreeLayer(), getPumpLayer(), getRainLayer()];
 
   return layers;
 };

@@ -1,4 +1,6 @@
-import { Color } from './types';
+import { scaleLinear, interpolateViridis } from 'd3';
+
+import { Color, RGBAColor } from './types';
 
 export const brokenColor: Color = {
   name: 'Dark Jungle Green',
@@ -42,4 +44,22 @@ export const pumpColors = {
   funktionsfähig: workingColor,
   defekt: brokenColor,
   verriegelt: lockedColor,
+};
+
+const hexToRGBAColor = (hexString: string): RGBAColor => {
+  const hex = hexString.substr(1).match(/.{2}/g);
+
+  return [
+    parseInt(hex[0], 16),
+    parseInt(hex[1], 16),
+    parseInt(hex[2], 16),
+    200,
+  ];
+};
+
+export const getRainColor = (rainAmount: number): RGBAColor => {
+  const scale = scaleLinear().domain([0, 300]).range([1, 0.6]);
+  const hexString = interpolateViridis(scale(rainAmount));
+
+  return hexToRGBAColor(hexString);
 };

@@ -109,7 +109,6 @@ const MapLayer = ({
       selectedTree,
       setSelectedTree,
 
-      hoveredPump,
       setHoveredPump
     );
 
