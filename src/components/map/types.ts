@@ -1,7 +1,4 @@
-export interface Generic {
-  [key: string]: any;
-}
-
+//ViewState
 export interface ViewState {
   bearing: number;
   latitude: number;
@@ -11,7 +8,12 @@ export interface ViewState {
   pitch: number;
   zoom: number;
 }
-
+export type OnViewStateChange = (e: unknown) => void;
+//GeoJson
+export interface FeatureCollection {
+  type: string;
+  features: TreeFeature[] | PumpFeature[] | RainFeature[];
+}
 export interface Feature {
   type: string;
   geometry: {
@@ -22,7 +24,7 @@ export interface Feature {
     id: string | number;
   };
 }
-
+//Tree
 export interface TreeFeature extends Feature {
   properties: {
     id: string;
@@ -30,7 +32,8 @@ export interface TreeFeature extends Feature {
     age: number;
   };
 }
-
+export type SetSelectedTree = (id: string) => void;
+//Pump
 export interface PumpFeature extends Feature {
   properties: {
     id: number;
@@ -41,35 +44,31 @@ export interface PumpFeature extends Feature {
     'pump:style': string;
   };
 }
-
+export interface HoveredPump {
+  message: string;
+  pointer: number[];
+}
+export type SetHoveredPump = (info: HoveredPump) => void;
+//Rain
 export interface RainFeature extends Feature {
   properties: {
     id: number;
     data: number[];
   };
 }
-
-export interface FeatureCollection {
-  type: string;
-  features: TreeFeature[] | PumpFeature[] | RainFeature[];
-}
-
-export type OnViewStateChange = (e: unknown) => void;
-export type SetSelectedTree = (id: string) => void;
+//Layer
 export type SetLayer = (layer: string) => void;
-
-export interface HoveredPump {
-  message: string;
-  pointer: number[];
-}
-
-export type SetHoveredPump = (info: HoveredPump) => void;
 
 //Color.ts
 export type RGBAColor = [number, number, number, number];
+export type RGBColor = [number, number, number];
 
-export interface Color extends Generic {
+export interface Color {
   name: string;
-  rgba: RGBAColor;
   hex: string;
+  rgba: RGBAColor;
+  cmyk: RGBAColor;
+  hsb: RGBColor;
+  hsl: RGBColor;
+  lab: RGBColor;
 }
