@@ -1,10 +1,23 @@
 import React, { FC, useState } from 'react';
-// import MapGL from './mapGL';
 
+import { DeckGL } from '@deck.gl/react';
+import { _MapContext as MapContext, StaticMap } from 'react-map-gl';
+import { ContextProviderValue } from '@deck.gl/core/lib/deck';
+import useSWR from 'swr';
+
+import MapControls from './mapControls';
 import PumpHover from './pumpHover';
-import MapLayer from './mapLayer';
+import Legend from './legend';
+import { getLayers } from './layer';
 
-import { ViewState } from './types';
+import {
+  ViewState,
+  OnViewStateChange,
+  SetSelectedTree,
+  SetLayer,
+  HoveredPump,
+  SetHoveredPump,
+} from './types';
 
 const initialViewState: ViewState = {
   bearing: 0,
@@ -16,16 +29,36 @@ const initialViewState: ViewState = {
   zoom: 11,
 };
 
+const fetcher = (url: string, ...args: unknown[]) =>
+  fetch(url, ...args).then(res => res.json());
+
+interface MapProps {
+  isMobile: boolean;
+  viewState: ViewState;
+  showTrees: boolean;
+  setShowTrees: (v: boolean) => void;
+  showPumps: boolean;
+  setShowPumps: (v: boolean) => void;
+  showRain: boolean;
+  setShowRain: (v: boolean) => void;
+  selectedTree: string | null;
+  setSelectedTree: SetSelectedTree;
+  hoveredPump: HoveredPump | null;
+  setHoveredPump: SetHoveredPump;
+}
+
 const Map: FC = () => {
-  const [viewState, setViewState] = useState(initialViewState);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
-  const [showTrees, setShowTrees] = useState(true);
-  const [showPumps, setShowPumps] = useState(false);
-  const [showRain, setShowRain] = useState(false);
+  const [viewState, setViewState] = useState<ViewState>(initialViewState);
 
-  const [selectedTree, setSelectedTree] = useState(null);
+  const [showTrees, setShowTrees] = useState<boolean>(true);
+  const [showPumps, setShowPumps] = useState<boolean>(false);
+  const [showRain, setShowRain] = useState<boolean>(false);
 
-  const [hoveredPump, setHoveredPump] = useState(null);
+  const [selectedTree, setSelectedTree] = useState<string | null>(null);
+
+  const [hoveredPump, setHoveredPump] = useState<HoveredPump | null>(null);
 
   const onViewStateChange = (e: { viewState: ViewState }) =>
     setViewState({ ...viewState, ...e.viewState });
@@ -52,31 +85,63 @@ const Map: FC = () => {
     setShowRain(showRain);
   };
 
-  console.log(hoveredPump);
-
-  return (
-    <>
-      {hoveredPump && (
-        <PumpHover
-          message={hoveredPump.message}
-          pointer={hoveredPump.pointer}
-        />
-      )}
-      <MapLayer
-        isMobile={false}
-        viewState={viewState}
-        onViewStateChange={onViewStateChange}
-        showTrees={showTrees}
-        showPumps={showPumps}
-        showRain={showRain}
-        setLayer={setLayer}
-        selectedTree={selectedTree}
-        setSelectedTree={setSelectedTree}
-        hoveredPump={hoveredPump}
-        setHoveredPump={setHoveredPump}
-      />
-    </>
+  const { data: trees, error: treesError } = useSWR(
+    '/assets/trees.json',
+    fetcher
   );
-};
+  const { data: pumps, error: pumpError } = useSWR(
+    '/assets/pumps.json',
+    fetcher
+  );
+  const { data: rain, error: rainError } = useSWR('/assets/rain.json', fetcher);
 
+  if (trees && pumps && rain) {
+    const layers = getLayers(
+      isMobile,
+      onViewStateChange,
+
+      showTrees,
+      showPumps,
+      showRain,
+
+      trees,
+      pumps,
+      rain,
+
+      selectedTree,
+      setSelectedTree,
+
+      setHoveredPump
+    );
+
+    return (
+      <>
+        {hoveredPump && (
+          <PumpHover
+            message={hoveredPump.message}
+            pointer={hoveredPump.pointer}
+          />
+        )}
+        <DeckGL
+          viewState={viewState}
+          onViewStateChange={onViewStateChange}
+          controller={true}
+          layers={layers}
+          ContextProvider={
+            (MapContext.Provider as unknown) as React.Provider<ContextProviderValue>
+          }
+        >
+          <StaticMap
+            mapboxApiAccessToken={process.env.REACT_APP_API_KEY}
+            mapStyle='mapbox://styles/technologiestiftung/ckke3kyr00w5w17mytksdr3ro'
+          ></StaticMap>
+          <MapControls onViewStateChange={onViewStateChange} />
+          <Legend setLayer={setLayer} />
+        </DeckGL>
+      </>
+    );
+  } else {
+    return <></>;
+  }
+};
 export default Map;
