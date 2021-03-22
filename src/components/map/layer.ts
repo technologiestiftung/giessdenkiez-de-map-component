@@ -138,13 +138,13 @@ export const getLayers = (
     return new GeoJsonLayer({
       id: 'rain',
       data: rain.features as RainFeature[],
-
+      //Properties
       pickable: true,
       stroked: false,
       filled: true,
       extruded: true,
       wireframe: true,
-
+      //Visibility
       visible: showRain,
       opacity: 0.95,
       getElevation: 1,
@@ -157,19 +157,10 @@ export const getLayers = (
       getFillColor: rain => getRainColor(rain.properties.data[0] / 10),
       getRadius: 9,
       pointRadiusMinPixels: 4,
-
+      //Stroke
       getLineColor: [0, 0, 0, 200],
       getLineWidth: 3,
       lineWidthMinPixels: 1.5,
-
-      // onHover: ({ picked, x, y, object }) => {
-      //   if (picked)
-      //     setHoveredPump({
-      //       pointer: [x, y],
-      //       message: object.properties['pump:status'],
-      //     });
-      //   else setHoveredPump(null);
-      // },
     });
   };
 
