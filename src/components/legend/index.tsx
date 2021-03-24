@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { SetLayer } from './types';
+import { SetLayer } from '../map/types';
 
 const LegendContainer = styled.div`
   z-index: 2;
@@ -29,7 +29,7 @@ interface LegendProps {
 const Legend = ({ setLayer }: LegendProps): JSX.Element => {
   return (
     <LegendContainer>
-      {['trees', 'pumps', 'rain'].map((layer, key) => {
+      {['trees', 'watered', 'adopted', 'pumps', 'rain'].map((layer, key) => {
         return (
           <p key={key} onClick={() => setLayer(layer)}>
             {layer}
