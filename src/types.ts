@@ -19,7 +19,7 @@ export interface Feature {
   type: string;
   geometry: {
     type: string;
-    coordinates: number[] | number[][];
+    coordinates: number[] | [number, number][][];
   };
   properties: {
     id: string | number;
@@ -72,20 +72,6 @@ export type Layer<FeatureType> = GeoJsonLayer<
   GeoJsonLayerProps<FeatureType>
 >;
 
-//Color.ts
-export type RGBAColor = [number, number, number, number];
-export type RGBColor = [number, number, number];
-
-export interface Color {
-  name: string;
-  hex: string;
-  rgba: RGBAColor;
-  cmyk: RGBAColor;
-  hsb: RGBColor;
-  hsl: RGBColor;
-  lab: RGBColor;
-}
-
 //App
 export interface WhichLayer {
   showTrees: boolean;
@@ -99,3 +85,5 @@ export type WhichLayerReducer = (
   previousWhichLayer: WhichLayer,
   layer: string
 ) => WhichLayer;
+
+export type AgeRange = [number, number];
