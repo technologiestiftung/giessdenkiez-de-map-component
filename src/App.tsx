@@ -7,17 +7,19 @@ import useSWR from 'swr';
 
 import Map from './components/map';
 import Legend from './components/legend';
-import { ViewState } from './components/map/types';
-import { getLayers } from './components/layer/layer';
+import PumpHover from './components/pumpHover';
+import { getLayers } from './components/layer';
 
 import {
   HoveredPump,
+  ViewState,
   Layer,
   PumpFeature,
   RainFeature,
   TreeFeature,
   WhichLayerReducer,
   WhichLayer,
+  AgeRange,
 } from './types';
 
 const fetcher = (url: string, ...args: unknown[]) =>
@@ -40,19 +42,7 @@ const whichLayerReducer: WhichLayerReducer = (previousWhichLayer, layer) => {
 
   const whichLayer: WhichLayer = { ...previousWhichLayer };
 
-  //show + layer.capitalizeFirstChar() ex: layer='trees' => showTrees
   whichLayer['show' + layer.replace(/^\w/, c => c.toUpperCase())] = true;
-  // switch (layer) {
-  //   case 'trees':
-  //     whichLayer.showTrees = true;
-  //     break;
-  //   case 'pumps':
-  //     whichLayer.showPumps = true;
-  //     break;
-  //   case 'rain':
-  //     whichLayer.showRain = true;
-  //     break;
-  // }
 
   return whichLayer;
 };
@@ -63,6 +53,7 @@ function App(): JSX.Element {
 
   const [selectedTree, setSelectedTree] = useState<string | null>(null);
   const [hoveredPump, setHoveredPump] = useState<HoveredPump | null>(null);
+  const [ageRange, setAgeRange] = useState<AgeRange>([0, 320]);
 
   const [whichLayer, whichLayerDispatch] = useReducer(whichLayerReducer, {
     showTrees: true,
@@ -93,12 +84,21 @@ function App(): JSX.Element {
     return null;
   } else {
     const data = { trees, pumps, rain, communityData };
-    console.log(whichLayer);
+
     return (
       <div className='App'>
         <ThemeProvider theme={theme}>
           <Map
             legend={<Legend setLayer={whichLayerDispatch} />}
+            pumpHover={
+              hoveredPump &&
+              isMobile && (
+                <PumpHover
+                  message={hoveredPump.message}
+                  pointer={hoveredPump.pointer}
+                />
+              )
+            }
             viewState={viewState}
             onViewStateChange={onViewStateChange}
             layers={getLayers({
@@ -109,6 +109,7 @@ function App(): JSX.Element {
               selectedTree,
               setSelectedTree,
               setHoveredPump,
+              ageRange,
             })}
           />
         </ThemeProvider>
