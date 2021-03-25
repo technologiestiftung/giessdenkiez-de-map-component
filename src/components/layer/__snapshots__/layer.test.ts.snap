@@ -1,0 +1,277 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DeckGL Layer Generation Functions getPumpLayer(showPumps=false, pumps=test_pumps, setHoveredPump=emptyFunction) 1`] = `
+GeoJsonLayer {
+  "context": null,
+  "count": 1,
+  "id": "pumps",
+  "internalState": null,
+  "lifecycle": "Awaiting state",
+  "parent": null,
+  "props": Object {
+    "extruded": true,
+    "filled": true,
+    "getFillColor": [Function],
+    "getLineColor": Array [
+      0,
+      0,
+      0,
+      200,
+    ],
+    "getLineWidth": 3,
+    "getRadius": 9,
+    "id": "pumps",
+    "lineWidthMinPixels": 1.5,
+    "onHover": [Function],
+    "opacity": 1,
+    "pickable": true,
+    "pointRadiusMinPixels": 4,
+    "stroked": true,
+    "visible": false,
+    Symbol(component): [Circular],
+    Symbol(asyncPropOriginal): Object {},
+    Symbol(asyncPropResolved): Object {
+      "data": Array [
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              13.564219,
+              52.5398067,
+            ],
+            "type": "Point",
+          },
+          "id": "0",
+          "properties": Object {
+            "addr:full": "Schragenfeldstraße 25",
+            "check_date": "unbekannt",
+            "id": 352734260,
+            "image": "File:Plumpe 11 Marzahn Schragenfeldstraße-Bäckerpfuhl (8).jpg",
+            "pump:status": "unbekannt",
+            "pump:style": "Borsig",
+          },
+          "type": "Feature",
+        },
+      ],
+    },
+  },
+  "state": null,
+}
+`;
+
+exports[`DeckGL Layer Generation Functions getPumpLayer(showPumps=true, pumps=test_pumps, setHoveredPump=emptyFunction) 1`] = `
+GeoJsonLayer {
+  "context": null,
+  "count": 0,
+  "id": "pumps",
+  "internalState": null,
+  "lifecycle": "Awaiting state",
+  "parent": null,
+  "props": Object {
+    "extruded": true,
+    "filled": true,
+    "getFillColor": [Function],
+    "getLineColor": Array [
+      0,
+      0,
+      0,
+      200,
+    ],
+    "getLineWidth": 3,
+    "getRadius": 9,
+    "id": "pumps",
+    "lineWidthMinPixels": 1.5,
+    "onHover": [Function],
+    "opacity": 1,
+    "pickable": true,
+    "pointRadiusMinPixels": 4,
+    "stroked": true,
+    "visible": true,
+    Symbol(component): [Circular],
+    Symbol(asyncPropOriginal): Object {},
+    Symbol(asyncPropResolved): Object {
+      "data": Array [
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              13.564219,
+              52.5398067,
+            ],
+            "type": "Point",
+          },
+          "id": "0",
+          "properties": Object {
+            "addr:full": "Schragenfeldstraße 25",
+            "check_date": "unbekannt",
+            "id": 352734260,
+            "image": "File:Plumpe 11 Marzahn Schragenfeldstraße-Bäckerpfuhl (8).jpg",
+            "pump:status": "unbekannt",
+            "pump:style": "Borsig",
+          },
+          "type": "Feature",
+        },
+      ],
+    },
+  },
+  "state": null,
+}
+`;
+
+exports[`DeckGL Layer Generation Functions getRainLayer(showRain=false, rain=test_rain) 1`] = `
+GeoJsonLayer {
+  "context": null,
+  "count": 3,
+  "id": "rain",
+  "internalState": null,
+  "lifecycle": "Awaiting state",
+  "parent": null,
+  "props": Object {
+    "extruded": true,
+    "filled": true,
+    "getElevation": 1,
+    "getFillColor": [Function],
+    "getLineColor": Array [
+      0,
+      0,
+      0,
+      200,
+    ],
+    "getLineWidth": 3,
+    "getRadius": 9,
+    "id": "rain",
+    "lineWidthMinPixels": 1.5,
+    "opacity": 0.95,
+    "pickable": true,
+    "pointRadiusMinPixels": 4,
+    "stroked": false,
+    "visible": false,
+    "wireframe": true,
+    Symbol(component): [Circular],
+    Symbol(asyncPropOriginal): Object {},
+    Symbol(asyncPropResolved): Object {
+      "data": Array [
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  13.4971096103036,
+                  52.6543762343589,
+                ],
+                Array [
+                  13.5042366641048,
+                  52.6541120206218,
+                ],
+                Array [
+                  13.5033652084477,
+                  52.64547732806,
+                ],
+                Array [
+                  13.4891325166817,
+                  52.6460049371748,
+                ],
+                Array [
+                  13.4900002353473,
+                  52.654638719058,
+                ],
+                Array [
+                  13.4971096103036,
+                  52.6543762343589,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {
+            "data": Array [
+              571,
+            ],
+            "id": 1,
+          },
+          "type": "Feature",
+        },
+      ],
+    },
+  },
+  "state": null,
+}
+`;
+
+exports[`DeckGL Layer Generation Functions getRainLayer(showRain=true, rain=test_rain) 1`] = `
+GeoJsonLayer {
+  "context": null,
+  "count": 2,
+  "id": "rain",
+  "internalState": null,
+  "lifecycle": "Awaiting state",
+  "parent": null,
+  "props": Object {
+    "extruded": true,
+    "filled": true,
+    "getElevation": 1,
+    "getFillColor": [Function],
+    "getLineColor": Array [
+      0,
+      0,
+      0,
+      200,
+    ],
+    "getLineWidth": 3,
+    "getRadius": 9,
+    "id": "rain",
+    "lineWidthMinPixels": 1.5,
+    "opacity": 0.95,
+    "pickable": true,
+    "pointRadiusMinPixels": 4,
+    "stroked": false,
+    "visible": true,
+    "wireframe": true,
+    Symbol(component): [Circular],
+    Symbol(asyncPropOriginal): Object {},
+    Symbol(asyncPropResolved): Object {
+      "data": Array [
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  13.4971096103036,
+                  52.6543762343589,
+                ],
+                Array [
+                  13.5042366641048,
+                  52.6541120206218,
+                ],
+                Array [
+                  13.5033652084477,
+                  52.64547732806,
+                ],
+                Array [
+                  13.4891325166817,
+                  52.6460049371748,
+                ],
+                Array [
+                  13.4900002353473,
+                  52.654638719058,
+                ],
+                Array [
+                  13.4971096103036,
+                  52.6543762343589,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {
+            "data": Array [
+              571,
+            ],
+            "id": 1,
+          },
+          "type": "Feature",
+        },
+      ],
+    },
+  },
+  "state": null,
+}
+`;
