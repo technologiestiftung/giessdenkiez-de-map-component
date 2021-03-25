@@ -1,4 +1,3 @@
-import { CommunityData } from './../../types';
 import { GeoJsonLayer, GeoJsonLayerProps } from '@deck.gl/layers';
 import { scaleLinear, interpolateViridis, easeCubic as d3EaseCubic } from 'd3';
 import { FlyToInterpolator } from 'react-map-gl';
@@ -12,8 +11,10 @@ import {
   OnViewStateChange,
   SetSelectedTree,
   SetHoveredPump,
+  CommunityData,
   Layer,
   WhichLayer,
+  AgeRange,
 } from 'src/types';
 
 import { pumpColors, getRainColor } from './colors';
@@ -45,9 +46,10 @@ interface GetTreeLayerProps {
   setSelectedTree: SetSelectedTree;
   onViewStateChange: OnViewStateChange;
   isMobile: boolean;
+  ageRange: AgeRange;
 }
 
-const getTreeLayer = ({
+export const getTreeLayer = ({
   showTrees,
   showWatered,
   showAdopted,
@@ -57,6 +59,7 @@ const getTreeLayer = ({
   setSelectedTree,
   onViewStateChange,
   isMobile,
+  ageRange,
 }: GetTreeLayerProps): GeoJsonLayer<
   TreeFeature,
   GeoJsonLayerProps<TreeFeature>
@@ -78,18 +81,12 @@ const getTreeLayer = ({
      * radolan_sum is an aggregated number of rain recieved
      */
     getFillColor: tree => {
-      if (showTrees) return getRainColor(tree.properties.radolan_sum);
-      else if (
-        showWatered &&
-        communityData[tree.properties.id] &&
-        communityData[tree.properties.id].watered
-      )
+      const { radolan_sum, id, age } = tree.properties;
+      if (showTrees && ageRange[0] <= age && age <= ageRange[1])
+        return getRainColor(radolan_sum);
+      else if (showWatered && communityData[id] && communityData[id].watered)
         return [53, 117, 177, 200];
-      else if (
-        showAdopted &&
-        communityData[tree.properties.id] &&
-        communityData[tree.properties.id].adopted
-      )
+      else if (showAdopted && communityData[id] && communityData[id].adopted)
         return [0, 128, 128, 200];
       else return [0, 0, 0, 0];
     },
@@ -122,7 +119,7 @@ const getTreeLayer = ({
   });
 };
 
-const getPumpLayer = (
+export const getPumpLayer = (
   showPumps: boolean,
   pumps: FeatureCollection,
   setHoveredPump: SetHoveredPump
@@ -150,6 +147,7 @@ const getPumpLayer = (
     lineWidthMinPixels: 1.5,
     //Hover
     onHover: ({ picked, x, y, object }) => {
+      console.log('Pump Hover');
       if (picked)
         setHoveredPump({
           pointer: [x, y],
@@ -160,7 +158,7 @@ const getPumpLayer = (
   });
 };
 
-const getRainLayer = (
+export const getRainLayer = (
   showRain: boolean,
   rain: FeatureCollection
 ): Layer<RainFeature> => {
@@ -211,6 +209,8 @@ interface GetLayersProps {
   setSelectedTree: SetSelectedTree;
 
   setHoveredPump: SetHoveredPump;
+
+  ageRange: AgeRange;
 }
 
 export const getLayers = ({
@@ -221,6 +221,7 @@ export const getLayers = ({
   selectedTree,
   setSelectedTree,
   setHoveredPump,
+  ageRange,
 }: GetLayersProps): Layer<Feature>[] => {
   const layers = [
     getTreeLayer({
@@ -233,6 +234,7 @@ export const getLayers = ({
       setSelectedTree,
       onViewStateChange,
       isMobile,
+      ageRange,
     }),
     getPumpLayer(showPumps, pumps, setHoveredPump),
     getRainLayer(showRain, rain),
