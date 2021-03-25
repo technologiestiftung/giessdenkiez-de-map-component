@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { SetLayer } from '../map/types';
+import { SetLayer } from 'src/types';
 
 const LegendContainer = styled.div`
   z-index: 2;
