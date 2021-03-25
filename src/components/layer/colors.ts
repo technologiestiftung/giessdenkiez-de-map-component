@@ -1,6 +1,17 @@
 import { scaleLinear, interpolateViridis } from 'd3';
 
-import { Color, RGBAColor } from './types';
+type RGBAColor = [number, number, number, number];
+type RGBColor = [number, number, number];
+
+interface Color {
+  name: string;
+  hex: string;
+  rgba: RGBAColor;
+  cmyk: RGBAColor;
+  hsb: RGBColor;
+  hsl: RGBColor;
+  lab: RGBColor;
+}
 
 export const brokenColor: Color = {
   name: 'Dark Jungle Green',
